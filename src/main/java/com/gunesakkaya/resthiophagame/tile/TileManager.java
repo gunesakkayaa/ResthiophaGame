@@ -14,17 +14,19 @@ public class TileManager {
     public Tile[] tile;
     public int[][] mapTileNum;
 
+    public int playerStartX = 1; // Default
+    public int playerStartY = 1;
+
     public TileManager(GamePanel gp) {
         this.gp = gp;
 
         tile = new Tile[10];
 
-        // Tile'ları oluştur
         tile[0] = new Tile(); // Yol
         tile[0].collision = false;
 
         tile[1] = new Tile(); // Duvar
-        tile[1].collision = false;
+        tile[1].collision = true;
 
         loadMap("/maps/map.txt");
     }
@@ -34,7 +36,6 @@ public class TileManager {
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-            // map boyutunu öğren
             String line;
             int rowCount = 0;
             while ((line = br.readLine()) != null) {
@@ -42,7 +43,6 @@ public class TileManager {
             }
             br.close();
 
-            // Tekrar baştan oku
             is = getClass().getResourceAsStream(filePath);
             br = new BufferedReader(new InputStreamReader(is));
 
@@ -54,13 +54,18 @@ public class TileManager {
                 for (int col = 0; col < colCount; col++) {
                     char ch = line.charAt(col);
                     if (ch == '1' || ch == 'X') {
-                        mapTileNum[row][col] = 1; // Duvar
+                        mapTileNum[row][col] = 1; // Wall
+                    } else if (ch == 'P') {
+                        playerStartX = col;
+                        playerStartY = row;
+                        mapTileNum[row][col] = 0; // Yol
                     } else {
                         mapTileNum[row][col] = 0; // Yol
                     }
                 }
                 row++;
             }
+
             br.close();
 
         } catch (IOException e) {
@@ -80,7 +85,6 @@ public class TileManager {
                 if (tileNum == 1) {
                     g2.setColor(Color.DARK_GRAY);
                     g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-
                     g2.setColor(Color.WHITE);
                     g2.setFont(new Font("Arial", Font.BOLD, gp.tileSize / 2));
                     g2.drawString("X", x + gp.tileSize / 3, y + (gp.tileSize * 2) / 3);

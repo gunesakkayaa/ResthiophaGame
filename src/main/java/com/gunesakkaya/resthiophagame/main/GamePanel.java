@@ -1,37 +1,31 @@
 package com.gunesakkaya.resthiophagame.main;
 
+import com.gunesakkaya.resthiophagame.entity.Monster;
 import com.gunesakkaya.resthiophagame.entity.Player;
 import com.gunesakkaya.resthiophagame.tile.TileManager;
 
-//import javax.swing.*;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    // SCREEN SETTINGS
-    final int originalTileSize = 16; // 16x16 tile
-    final int scale = 3;
+    final int originalTileSize = 16;
+    final int scale = 2;
 
-    public final int tileSize = originalTileSize * scale; //48x48 tile
-    public final int maxScreenCol = 16;
-    public final int maxScreenRow = 12;
-    final int screenWidth = tileSize * maxScreenCol; //768 pixels
-    final int screenHeight = tileSize * maxScreenRow; //576 pixels
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 20;
+    public final int maxScreenRow = 20;
+    final int screenWidth = tileSize * maxScreenCol;
+    final int screenHeight = tileSize * maxScreenRow;
 
-    // FPS
     int FPS = 60;
 
+    public ArrayList<Monster> monsters = new ArrayList<>();
     public TileManager tileM = new TileManager(this);
-
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-    Player player = new Player(this,keyH);
-
-    // Set player's default position
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 4;
+    public Player player;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -39,18 +33,29 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+
+        int px = tileM.playerStartX * tileSize;
+        int py = tileM.playerStartY * tileSize;
+        player = new Player(this, keyH);
+        player.setPosition(px, py);
+
+        spawnMonsters();
+    }
+
+    public void spawnMonsters() {
+        monsters.add(new Monster(this, tileSize * 5, tileSize * 5));
+        monsters.add(new Monster(this, tileSize * 10, tileSize * 8));
+        monsters.add(new Monster(this, tileSize * 15, tileSize * 3));
     }
 
     public void startGameThread() {
-
         gameThread = new Thread(this);
         gameThread.start();
-
     }
+
     @Override
     public void run() {
-
-        double drawInterval = 1000000000 / FPS;
+        double drawInterval = 1000000000.0 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
@@ -58,44 +63,40 @@ public class GamePanel extends JPanel implements Runnable {
         int drawCount = 0;
 
         while (gameThread != null) {
-
             currentTime = System.nanoTime();
-
             delta += (currentTime - lastTime) / drawInterval;
             timer += (currentTime - lastTime);
             lastTime = currentTime;
 
-            if(delta >= 1) {
+            if (delta >= 1) {
                 update();
                 repaint();
-                delta --;
+                delta--;
                 drawCount++;
             }
 
-            if(timer >= 1000000000) {
+            if (timer >= 1000000000) {
                 System.out.println("FPS: " + drawCount);
                 drawCount = 0;
                 timer = 0;
             }
         }
     }
-    public void update(){
 
+    public void update() {
         player.update();
     }
+
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
-
-        Graphics2D g2 = (Graphics2D)g;
+        Graphics2D g2 = (Graphics2D) g;
 
         tileM.draw(g2);
-
         player.draw(g2);
 
-        //g2.setColor(Color.white); karenin izini bıraktı
-
-        //g2.fillRect(playerX, playerY, tileSize, tileSize);
+        for (Monster monster : monsters) {
+            monster.draw(g2, tileSize);
+        }
 
         g2.dispose();
     }
