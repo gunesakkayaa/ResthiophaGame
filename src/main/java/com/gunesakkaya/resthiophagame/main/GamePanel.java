@@ -10,10 +10,10 @@ import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    final int originalTileSize = 16;
-    final int scale = 2;
+    final int originalTileSize = 20;
+    final int scale = 3;
 
-    public final int tileSize = originalTileSize * scale;
+    public final int tileSize = originalTileSize * scale; // 48x48
     public final int maxScreenCol = 20;
     public final int maxScreenRow = 20;
     final int screenWidth = tileSize * maxScreenCol;
@@ -43,9 +43,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void spawnMonsters() {
-        monsters.add(new Monster(this, tileSize * 5, tileSize * 5));
-        monsters.add(new Monster(this, tileSize * 10, tileSize * 8));
-        monsters.add(new Monster(this, tileSize * 15, tileSize * 3));
+        monsters.add(new Monster(this, tileSize * 4, tileSize * 5));
+        monsters.add(new Monster(this, tileSize * 10, tileSize * 7));
+        monsters.add(new Monster(this, tileSize * 15, tileSize * 2));
+        monsters.add(new Monster(this, tileSize * 10, tileSize * 10));
     }
 
     public void startGameThread() {
@@ -95,8 +96,10 @@ public class GamePanel extends JPanel implements Runnable {
         player.draw(g2);
 
         for (Monster monster : monsters) {
+
             monster.draw(g2, tileSize);
         }
+
 
         g2.dispose();
     }

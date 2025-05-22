@@ -13,6 +13,10 @@ public class Player extends Entity {
     public int speed;
     public String direction = "";
     public boolean collisionOn = false;
+    public int maxHp = 100;
+    public int currentHp = 100;
+
+
 
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 
@@ -58,6 +62,8 @@ public class Player extends Entity {
         if (!collisionWithTiles(futureArea)) {
             x = newX;
             y = newY;
+
+
         }
     }
 
@@ -79,9 +85,33 @@ public class Player extends Entity {
 
         return false;
     }
-
     public void draw(Graphics2D g2) {
+        // Oyuncuyu çiz
         g2.setColor(Color.white);
         g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+
+        // ==== HP Bar ====
+        int barWidth = gp.tileSize;
+        int barHeight = 6;
+        int barX = x;
+        int barY = y - 10; // karakterin üstünde olsun
+
+        // HP oranı
+        double hpRatio = (double) currentHp / maxHp;
+        int hpBarFilled = (int) (barWidth * hpRatio);
+
+        // Dış çerçeve
+        g2.setColor(Color.GRAY);
+        g2.fillRect(barX, barY, barWidth, barHeight);
+
+        // Doluluk (kırmızı)
+        g2.setColor(Color.RED);
+        g2.fillRect(barX, barY, hpBarFilled, barHeight);
+
+        // Opsiyonel: yazıyla HP
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.PLAIN, 10));
+        g2.drawString(currentHp + "/" + maxHp, barX + 2, barY + barHeight - 1);
     }
+
 }
