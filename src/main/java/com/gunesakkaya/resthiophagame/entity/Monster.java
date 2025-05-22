@@ -3,9 +3,11 @@ package com.gunesakkaya.resthiophagame.entity;
 import com.gunesakkaya.resthiophagame.main.GamePanel;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Monster extends Entity {
+public class Monster extends Entity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     GamePanel gp;
     public int hp = 100;
     public boolean alive = true;

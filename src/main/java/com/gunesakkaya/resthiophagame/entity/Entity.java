@@ -1,13 +1,10 @@
 package com.gunesakkaya.resthiophagame.entity;
 
-import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
-public class Entity {
+public class Entity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public int x,y;
     public int speed;
-    public int hp;
-
-//    public BufferedImage player;
-//    public String direction;
 }
