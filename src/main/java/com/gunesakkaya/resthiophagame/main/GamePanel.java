@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    final int originalTileSize = 20;
+    final int originalTileSize = 13;
     final int scale = 3;
 
     public final int tileSize = originalTileSize * scale; // 48x48
@@ -85,6 +85,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
+        for (Monster monster : monsters) {
+            monster.update(); // <-- bu satırı ekle
+        }
     }
 
     public void paintComponent(Graphics g) {
@@ -95,6 +98,7 @@ public class GamePanel extends JPanel implements Runnable {
         player.draw(g2);
 
         for (Monster monster : monsters) {
+            monster.update();
             monster.draw(g2, tileSize);
         }
 
