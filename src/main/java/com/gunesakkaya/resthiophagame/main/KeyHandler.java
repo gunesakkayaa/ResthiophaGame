@@ -28,6 +28,7 @@ public class KeyHandler implements KeyListener {
             rightPressed = true;
         }
     }
+
     @Override
     public void keyReleased(KeyEvent e) {
 

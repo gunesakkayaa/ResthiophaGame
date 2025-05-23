@@ -52,6 +52,13 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
     }
+    public enum GameState {
+        PLAYING,
+        GAME_OVER
+    }
+
+    public GameState gameState = GameState.PLAYING;
+
 
     @Override
     public void run() {
@@ -84,11 +91,18 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        player.update();
-        for (Monster monster : monsters) {
-            monster.update();
+        if (gameState == GameState.PLAYING) {
+            player.update();
+            for (Monster monster : monsters) {
+                monster.update();
+            }
+
+            if (player.currentHp <= 0) {
+                gameState = GameState.GAME_OVER;
+            }
         }
     }
+
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -100,6 +114,17 @@ public class GamePanel extends JPanel implements Runnable {
         for (Monster monster : monsters) {
             monster.draw(g2, tileSize);
         }
+        if (gameState == GameState.GAME_OVER) {
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Arial", Font.BOLD, 40));
+            String msg = "Game Over – Play again? (Y/N)";
+            int msgWidth = g2.getFontMetrics().stringWidth(msg);
+            g2.drawString(msg, (screenWidth - msgWidth) / 2, screenHeight / 2);
+        }
+
 
         g2.dispose();
     }

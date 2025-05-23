@@ -19,7 +19,7 @@ public class Player extends Entity {
     public int currentHp = 200;
     public Gear equippedSword = null;
     public Gear equippedShoes = null;
-    private int moveCooldown = 30;
+    private int moveCooldown = 10;
     private int moveCounter = 0;
 
     public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
