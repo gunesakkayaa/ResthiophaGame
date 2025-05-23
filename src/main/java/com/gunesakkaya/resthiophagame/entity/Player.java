@@ -33,7 +33,7 @@ public class Player extends Entity {
     public void setDefaultValues() {
         x = 100;
         y = 100;
-        speed = 6;
+        speed = 10;
     }
 
     public void setPosition(int x, int y) {
@@ -150,6 +150,11 @@ public class Player extends Entity {
 
         double hpRatio = (double) currentHp / maxHp;
         int hpBarFilled = (int) (barWidth * hpRatio);
+
+        g2.setFont(new Font("Consolas", Font.BOLD, gp.tileSize / 2));
+        g2.setColor(Color.BLACK);
+        g2.drawString("P", drawX + gp.tileSize / 4, drawY + gp.tileSize / 2 + 4);
+
 
         g2.setColor(Color.GRAY);
         g2.fillRect(barX, barY, barWidth, barHeight);

@@ -1,3 +1,4 @@
+// Monster.java
 package com.gunesakkaya.resthiophagame.entity;
 
 import com.gunesakkaya.resthiophagame.main.GamePanel;
@@ -50,35 +51,42 @@ public class Monster extends Entity implements Serializable {
 
     private void moveRandom() {
         int dir = random.nextInt(4);
-        int dx = 0, dy = 0;
 
-        if (dir == 0) dy = -speed;
-        else if (dir == 1) dy = speed;
-        else if (dir == 2) dx = -speed;
-        else if (dir == 3) dx = speed;
+        for (int i = 0; i < speed; i++) {
+            int dx = 0, dy = 0;
 
-        if (!collidesWithWall(x + dx, y + dy)) {
-            x += dx;
-            y += dy;
+            if (dir == 0) dy = -1;
+            else if (dir == 1) dy = 1;
+            else if (dir == 2) dx = -1;
+            else if (dir == 3) dx = 1;
+
+            if (!collidesWithWall(x + dx, y + dy)) {
+                x += dx;
+                y += dy;
+            } else {
+                break;
+            }
         }
     }
 
     private void moveTowardsPlayer() {
-        int playerX = gp.player.x;
-        int playerY = gp.player.y;
+        int dx = 0, dy = 0;
+        if (gp.player.x < x) dx = -1;
+        else if (gp.player.x > x) dx = 1;
 
-        int dx = 0;
-        int dy = 0;
+        if (gp.player.y < y) dy = -1;
+        else if (gp.player.y > y) dy = 1;
 
-        if (playerX < x) dx = -speed;
-        else if (playerX > x) dx = speed;
+        for (int i = 0; i < speed; i++) {
+            int newX = x + dx;
+            int newY = y + dy;
 
-        if (playerY < y) dy = -speed;
-        else if (playerY > y) dy = speed;
-
-        if (!collidesWithWall(x + dx, y + dy)) {
-            x += dx;
-            y += dy;
+            if (!collidesWithWall(newX, newY)) {
+                x = newX;
+                y = newY;
+            } else {
+                break;
+            }
         }
     }
 
@@ -97,22 +105,18 @@ public class Monster extends Entity implements Serializable {
                     || gp.tileM.tile[gp.tileM.mapTileNum[bottomRow][rightCol]].collision;
         } catch (ArrayIndexOutOfBoundsException e) {
             return true;
-
         }
     }
 
     private void attackPlayerIfNearby() {
         Player player = gp.player;
-        // Eğer oyuncuya 1 tile menzildeyse saldır
         if (Math.abs(player.x - this.x) < gp.tileSize && Math.abs(player.y - this.y) < gp.tileSize) {
-            int damage = 3; // canavarın saldırı gücü
+            int damage = 3;
             player.currentHp -= damage;
             System.out.println("Monster attacked player for " + damage + " damage. Player HP: " + player.currentHp);
 
             if (player.currentHp <= 0) {
                 System.out.println("Player is dead!");
-                // Buraya oyuncu öldüğünde yapılacak işlemleri ekleyebilirsin
-
             }
         }
     }
@@ -120,11 +124,26 @@ public class Monster extends Entity implements Serializable {
     public void draw(Graphics2D g2, int tileSize) {
         if (!alive) return;
 
+        int drawX = x + solidArea.x;
+        int drawY = y + solidArea.y;
+
         g2.setColor(Color.BLACK);
-        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+        g2.fillRect(drawX, drawY, solidArea.width, solidArea.height);
+
+        // Yazıyı ortalamak için FontMetrics kullan
+        String text = "M";
+        Font font = new Font("Verdana", Font.TRUETYPE_FONT, gp.tileSize / 2);
+        g2.setFont(font);
+        FontMetrics metrics = g2.getFontMetrics(font);
+
+        int textWidth = metrics.stringWidth(text);
+        int textHeight = metrics.getHeight();
+
+        int textX = drawX + (solidArea.width - textWidth) / 2;
+        int textY = drawY + ((solidArea.height - textHeight) / 2) + metrics.getAscent();
 
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, gp.tileSize / 2));
-        g2.drawString("M", x + gp.tileSize / 3, y + (gp.tileSize * 2) / 3);
+        g2.drawString(text, textX, textY);
     }
+
 }
