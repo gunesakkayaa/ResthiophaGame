@@ -33,7 +33,7 @@ public class Monster extends Entity implements Serializable {
         if (moveCounter >= moveCooldown) {
             moveCounter = 0;
 
-            int behavior = random.nextInt(3);
+            int behavior = random.nextInt(3); //buralar monsterında hal ve hareketi belirledik
             switch (behavior) {
                 case 0:
                 case 2:
@@ -48,7 +48,7 @@ public class Monster extends Entity implements Serializable {
         attackPlayerIfNearby();
     }
 
-    private void moveRandom() {
+    private void moveRandom() { //bir aşağı yukarı sağ sol falan gidiyo burada
         int dir = random.nextInt(4);
 
         for (int i = 0; i < speed; i++) {

@@ -83,13 +83,13 @@ public class TileManager {
                 int y = row * gp.tileSize;
 
                 if (tileNum == 1) {
-                    g2.setColor(Color.BLUE);//walls
+                    g2.setColor(Color.gray);//walls color
                     g2.fillRect(x, y, gp.tileSize, gp.tileSize);
                     g2.setColor(Color.WHITE);
-                    g2.setFont(new Font("Arial", Font.BOLD, gp.tileSize / 2));
+                    g2.setFont(new Font("Verdana", Font.BOLD, gp.tileSize / 2));
                     g2.drawString("X", x + gp.tileSize / 3, y + (gp.tileSize * 2) / 3);
                 } else {
-                    g2.setColor(Color.PINK);//path
+                    g2.setColor(Color.decode("#d4e4b4")); //path color
                     g2.fillRect(x, y, gp.tileSize, gp.tileSize);
                 }
             }

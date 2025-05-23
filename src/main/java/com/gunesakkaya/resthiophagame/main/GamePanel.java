@@ -162,17 +162,38 @@ public class GamePanel extends JPanel implements Runnable {
         for (Monster monster : monsters) {
             monster.draw(g2, tileSize);
         }
+
         if (gameState == GameState.GAME_OVER) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, screenWidth, screenHeight);
 
-            g2.setColor(Color.RED);
-            g2.setFont(new Font("Arial", Font.BOLD, 40));
-            String msg = "Game Over – Play again? (Y/N)";
-            int msgWidth = g2.getFontMetrics().stringWidth(msg);
-            g2.drawString(msg, (screenWidth - msgWidth) / 2, screenHeight / 2);
-        }
+            // game over olduktan sonra ekranda çıkmasını istediğimiz box'ı şekillendirdik
+            int boxWidth = 400;
+            int boxHeight = 150;
+            int boxX = (screenWidth - boxWidth) / 2;
+            int boxY = (screenHeight - boxHeight) / 2;
 
+            g2.setColor(new Color(30, 30, 30, 220)); //  burada saydamlaştırdık
+            g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20); // kutunun keskin hatta olmaması için radiusu ekledik
+
+            // Game Over yazısı:
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Verdana", Font.BOLD, 36));
+            String gameOverText = "GAME OVER";
+            int textWidth = g2.getFontMetrics().stringWidth(gameOverText);
+            g2.drawString(gameOverText, boxX + (boxWidth - textWidth) / 2, boxY + 50);
+
+            // YES ve NO yazıları:
+            g2.setFont(new Font("Verdana", Font.BOLD, 24));
+            g2.setColor(Color.WHITE);
+            String yesText = "[Y] YES";
+            String noText = "[N] NO";
+            int yesWidth = g2.getFontMetrics().stringWidth(yesText);
+            int noWidth = g2.getFontMetrics().stringWidth(noText);
+
+            g2.drawString(yesText, boxX + boxWidth / 4 - yesWidth / 2, boxY + 110);
+            g2.drawString(noText, boxX + (boxWidth * 3 / 4) - noWidth / 2, boxY + 110);
+        }
 
         g2.dispose();
     }
