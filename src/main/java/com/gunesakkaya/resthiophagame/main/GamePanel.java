@@ -12,7 +12,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     final int originalTileSize = 13;
     final int scale = 3;
-
     public final int tileSize = originalTileSize * scale; // 48x48
     public final int maxScreenCol = 20;
     public final int maxScreenRow = 20;
@@ -23,9 +22,23 @@ public class GamePanel extends JPanel implements Runnable {
 
     public ArrayList<Monster> monsters = new ArrayList<>();
     public TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     public Thread gameThread;
     public Player player;
+
+    private static class RespawnInfo { //yeniden doğmasıyla alakalı bilgileri tanımlıyoruz
+        int x, y;
+        long respawnTime;
+
+        RespawnInfo(int x, int y, long respawnTime) {
+            this.x = x;
+            this.y = y;
+            this.respawnTime = respawnTime;
+        }
+    }
+
+    private final java.util.List<RespawnInfo> pendingRespawns = new ArrayList<>();
+
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -47,10 +60,22 @@ public class GamePanel extends JPanel implements Runnable {
         monsters.add(new Monster(this, tileSize * 15, tileSize * 2));
         monsters.add(new Monster(this, tileSize * 10, tileSize * 10));
     }
+    public void restartGame() {
+        int px = tileM.playerStartX * tileSize;
+        int py = tileM.playerStartY * tileSize;
+
+        player.setPosition(px, py);
+        player.currentHp = player.maxHp;
+        monsters.clear();
+        spawnMonsters();
+        gameState = GameState.PLAYING;
+    }
+
 
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+
     }
     public enum GameState {
         PLAYING,
@@ -93,15 +118,38 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         if (gameState == GameState.PLAYING) {
             player.update();
-            for (Monster monster : monsters) {
+
+            // Monster güncelleme + ölüm kontrolü
+            java.util.Iterator<Monster> iterator = monsters.iterator();
+            while (iterator.hasNext()) {
+                Monster monster = iterator.next();
                 monster.update();
+
+                if (!monster.alive) {
+                    iterator.remove(); // ölen monster oyundan çıkar
+                    long respawnTime = System.currentTimeMillis() + 20000; // respawn süresi belirledik (20 saniye)
+                    pendingRespawns.add(new RespawnInfo(monster.x, monster.y, respawnTime));
+                }
             }
 
+            // Respawn kontrolü
+            long now = System.currentTimeMillis();
+            java.util.Iterator<RespawnInfo> respawnIterator = pendingRespawns.iterator();
+            while (respawnIterator.hasNext()) {
+                RespawnInfo info = respawnIterator.next();
+                if (now >= info.respawnTime) {
+                    monsters.add(new Monster(this, info.x, info.y));
+                    respawnIterator.remove();
+                }
+            }
+
+            // player ölünce gamer over metoduna geçer
             if (player.currentHp <= 0) {
                 gameState = GameState.GAME_OVER;
             }
         }
     }
+
 
 
     public void paintComponent(Graphics g) {

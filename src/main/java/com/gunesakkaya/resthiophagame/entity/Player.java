@@ -1,11 +1,9 @@
-// Player.java
 package com.gunesakkaya.resthiophagame.entity;
 
 import com.gunesakkaya.resthiophagame.main.GamePanel;
 import com.gunesakkaya.resthiophagame.main.KeyHandler;
 
 import java.awt.*;
-import java.util.Random;
 
 public class Player extends Entity {
 
@@ -17,8 +15,6 @@ public class Player extends Entity {
     public boolean collisionOn = false;
     public int maxHp = 200;
     public int currentHp = 200;
-    public Gear equippedSword = null;
-    public Gear equippedShoes = null;
     private int moveCooldown = 10;
     private int moveCounter = 0;
 
@@ -45,10 +41,6 @@ public class Player extends Entity {
         moveCounter++;
 
         int cooldown = moveCooldown;
-        if (equippedShoes != null) {
-            cooldown -= equippedShoes.value;
-            if (cooldown < 5) cooldown = 5;
-        }
 
         if (moveCounter >= cooldown) {
             for (int i = 0; i < speed; i++) {
@@ -90,31 +82,14 @@ public class Player extends Entity {
 
             if (Math.abs(m.x - this.x) < gp.tileSize && Math.abs(m.y - this.y) < gp.tileSize) {
                 int damage = 2;
-                if (equippedSword != null) {
-                    damage += equippedSword.value;
-                }
                 m.hp -= damage;
                 System.out.println("Attacked monster for " + damage + " damage. Remaining HP: " + m.hp);
 
                 if (m.hp <= 0) {
                     m.alive = false;
-                    lootDrop(m);
+                    System.out.println("Monster defeated.");
                 }
             }
-        }
-    }
-
-    private void lootDrop(Monster m) {
-        Random rand = new Random();
-        Gear.Type type = rand.nextBoolean() ? Gear.Type.SWORD : Gear.Type.SHOES;
-        int value = rand.nextInt(3) + 1;
-        Gear loot = new Gear(type, value);
-        System.out.println("Monster dropped: " + loot);
-
-        if (type == Gear.Type.SWORD) {
-            equippedSword = loot;
-        } else {
-            equippedShoes = loot;
         }
     }
 
@@ -154,7 +129,6 @@ public class Player extends Entity {
         g2.setFont(new Font("Consolas", Font.BOLD, gp.tileSize / 2));
         g2.setColor(Color.BLACK);
         g2.drawString("P", drawX + gp.tileSize / 4, drawY + gp.tileSize / 2 + 4);
-
 
         g2.setColor(Color.GRAY);
         g2.fillRect(barX, barY, barWidth, barHeight);

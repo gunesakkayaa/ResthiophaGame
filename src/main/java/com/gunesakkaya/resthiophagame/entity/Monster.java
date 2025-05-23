@@ -1,4 +1,3 @@
-// Monster.java
 package com.gunesakkaya.resthiophagame.entity;
 
 import com.gunesakkaya.resthiophagame.main.GamePanel;
@@ -130,7 +129,6 @@ public class Monster extends Entity implements Serializable {
         g2.setColor(Color.BLACK);
         g2.fillRect(drawX, drawY, solidArea.width, solidArea.height);
 
-        // Yazıyı ortalamak için FontMetrics kullan
         String text = "M";
         Font font = new Font("Verdana", Font.TRUETYPE_FONT, gp.tileSize / 2);
         g2.setFont(font);
