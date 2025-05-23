@@ -83,7 +83,7 @@ public class TileManager {
                 int y = row * gp.tileSize;
 
                 if (tileNum == 1) {
-                    g2.setColor(Color.PINK);//walls
+                    g2.setColor(Color.BLUE);//walls
                     g2.fillRect(x, y, gp.tileSize, gp.tileSize);
                     g2.setColor(Color.WHITE);
                     g2.setFont(new Font("Arial", Font.BOLD, gp.tileSize / 2));

@@ -1,3 +1,4 @@
+// Player.java
 package com.gunesakkaya.resthiophagame.entity;
 
 import com.gunesakkaya.resthiophagame.main.GamePanel;
@@ -18,10 +19,10 @@ public class Player extends Entity {
     public int currentHp = 200;
     public Gear equippedSword = null;
     public Gear equippedShoes = null;
-    private int moveCooldown = 20; // varsayılan 30 frame
+    private int moveCooldown = 30;
     private int moveCounter = 0;
 
-    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -32,7 +33,7 @@ public class Player extends Entity {
     public void setDefaultValues() {
         x = 100;
         y = 100;
-        speed = 10;
+        speed = 6;
     }
 
     public void setPosition(int x, int y) {
@@ -46,45 +47,47 @@ public class Player extends Entity {
         int cooldown = moveCooldown;
         if (equippedShoes != null) {
             cooldown -= equippedShoes.value;
-            if (cooldown < 5) cooldown = 5; // minimum 5 frame olsun
+            if (cooldown < 5) cooldown = 5;
         }
 
         if (moveCounter >= cooldown) {
-            int newX = x;
-            int newY = y;
+            for (int i = 0; i < speed; i++) {
+                int newX = x;
+                int newY = y;
 
-            if (keyH.upPressed) {
-                newY -= speed;
-                direction = "up";
-            } else if (keyH.downPressed) {
-                newY += speed;
-                direction = "down";
-            } else if (keyH.leftPressed) {
-                newX -= speed;
-                direction = "left";
-            } else if (keyH.rightPressed) {
-                newX += speed;
-                direction = "right";
+                if (keyH.upPressed) {
+                    newY -= 1;
+                    direction = "up";
+                } else if (keyH.downPressed) {
+                    newY += 1;
+                    direction = "down";
+                } else if (keyH.leftPressed) {
+                    newX -= 1;
+                    direction = "left";
+                } else if (keyH.rightPressed) {
+                    newX += 1;
+                    direction = "right";
+                }
+
+                Rectangle futureArea = new Rectangle(newX + solidArea.x, newY + solidArea.y, solidArea.width, solidArea.height);
+
+                if (!collisionWithTiles(futureArea)) {
+                    x = newX;
+                    y = newY;
+                } else {
+                    break;
+                }
             }
-
-            Rectangle futureArea = new Rectangle(newX + solidArea.x, newY + solidArea.y, solidArea.width, solidArea.height);
-
-            if (!collisionWithTiles(futureArea)) {
-                x = newX;
-                y = newY;
-                moveCounter = 0;
-            }
+            moveCounter = 0;
         }
 
         attackNearbyMonsters();
-
     }
 
     private void attackNearbyMonsters() {
         for (Monster m : gp.monsters) {
             if (!m.alive) continue;
 
-            // 1 tile menzildeyse
             if (Math.abs(m.x - this.x) < gp.tileSize && Math.abs(m.y - this.y) < gp.tileSize) {
                 int damage = 2;
                 if (equippedSword != null) {
@@ -101,15 +104,13 @@ public class Player extends Entity {
         }
     }
 
-
     private void lootDrop(Monster m) {
         Random rand = new Random();
         Gear.Type type = rand.nextBoolean() ? Gear.Type.SWORD : Gear.Type.SHOES;
-        int value = rand.nextInt(3) + 1; // +1 ile +3 arası
+        int value = rand.nextInt(3) + 1;
         Gear loot = new Gear(type, value);
         System.out.println("Monster dropped: " + loot);
 
-        // Şimdilik otomatik olarak giydiriyoruz:
         if (type == Gear.Type.SWORD) {
             equippedSword = loot;
         } else {
@@ -136,14 +137,16 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D g2) {
-        g2.setColor(Color.white);
-        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+        int drawX = x + solidArea.x;
+        int drawY = y + solidArea.y;
 
-        // ==== HP Bar ====
+        g2.setColor(Color.white);
+        g2.fillRect(drawX, drawY, solidArea.width, solidArea.height);
+
         int barWidth = gp.tileSize;
         int barHeight = 6;
-        int barX = x;
-        int barY = y - 10;
+        int barX = drawX;
+        int barY = drawY - 10;
 
         double hpRatio = (double) currentHp / maxHp;
         int hpBarFilled = (int) (barWidth * hpRatio);

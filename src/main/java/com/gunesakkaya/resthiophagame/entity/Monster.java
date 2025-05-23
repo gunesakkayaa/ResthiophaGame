@@ -12,9 +12,9 @@ public class Monster extends Entity implements Serializable {
     GamePanel gp;
     public int hp = 100;
     public boolean alive = true;
-    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
-    private int moveCooldown = 25; // hareket gecikmesi (frame cinsinden)
+    private int moveCooldown = 25;
     private int moveCounter = 0;
 
     private Random random = new Random();
@@ -33,16 +33,14 @@ public class Monster extends Entity implements Serializable {
         if (moveCounter >= moveCooldown) {
             moveCounter = 0;
 
-            int behavior = random.nextInt(3); // 0: random, 1: player track, 2: random again //(2 yaparsak daha az titrer)
+            int behavior = random.nextInt(3);
             switch (behavior) {
                 case 0:
+                case 2:
                     moveRandom();
                     break;
                 case 1:
                     moveTowardsPlayer();
-                    break;
-                case 2:
-                    moveRandom();
                     break;
             }
         }
@@ -54,10 +52,10 @@ public class Monster extends Entity implements Serializable {
         int dir = random.nextInt(4);
         int dx = 0, dy = 0;
 
-        if (dir == 0) dy = -speed;       // up
-        else if (dir == 1) dy = speed;   // down
-        else if (dir == 2) dx = -speed;  // left
-        else if (dir == 3) dx = speed;   // right
+        if (dir == 0) dy = -speed;
+        else if (dir == 1) dy = speed;
+        else if (dir == 2) dx = -speed;
+        else if (dir == 3) dx = speed;
 
         if (!collidesWithWall(x + dx, y + dy)) {
             x += dx;
@@ -85,10 +83,12 @@ public class Monster extends Entity implements Serializable {
     }
 
     private boolean collidesWithWall(int newX, int newY) {
-        int leftCol = newX / gp.tileSize;
-        int rightCol = (newX + solidArea.width - 1) / gp.tileSize;
-        int topRow = newY / gp.tileSize;
-        int bottomRow = (newY + solidArea.height - 1) / gp.tileSize;
+        Rectangle futureArea = new Rectangle(newX + solidArea.x, newY + solidArea.y, solidArea.width, solidArea.height);
+
+        int leftCol = futureArea.x / gp.tileSize;
+        int rightCol = (futureArea.x + futureArea.width - 1) / gp.tileSize;
+        int topRow = futureArea.y / gp.tileSize;
+        int bottomRow = (futureArea.y + futureArea.height - 1) / gp.tileSize;
 
         try {
             return gp.tileM.tile[gp.tileM.mapTileNum[topRow][leftCol]].collision
@@ -96,7 +96,8 @@ public class Monster extends Entity implements Serializable {
                     || gp.tileM.tile[gp.tileM.mapTileNum[bottomRow][leftCol]].collision
                     || gp.tileM.tile[gp.tileM.mapTileNum[bottomRow][rightCol]].collision;
         } catch (ArrayIndexOutOfBoundsException e) {
-            return true; // duvar gibi davran
+            return true;
+
         }
     }
 
@@ -111,6 +112,7 @@ public class Monster extends Entity implements Serializable {
             if (player.currentHp <= 0) {
                 System.out.println("Player is dead!");
                 // Buraya oyuncu öldüğünde yapılacak işlemleri ekleyebilirsin
+
             }
         }
     }
