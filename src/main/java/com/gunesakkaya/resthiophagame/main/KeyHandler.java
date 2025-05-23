@@ -8,7 +8,7 @@ public class KeyHandler implements KeyListener {
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     @Override
     public void keyTyped(KeyEvent e) {
-        // cunku bakcaz duruma
+         //tuşlara basılıyor mu onu bi kontrol ediyoruz
     }
     @Override
     public void keyPressed(KeyEvent e) {

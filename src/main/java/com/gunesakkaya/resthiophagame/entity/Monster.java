@@ -33,7 +33,7 @@ public class Monster extends Entity implements Serializable {
         if (moveCounter >= moveCooldown) {
             moveCounter = 0;
 
-            int behavior = random.nextInt(3); // 0: random, 1: player track, 2: random again
+            int behavior = random.nextInt(3); // 0: random, 1: player track, 2: random again //(2 yaparsak daha az titrer)
             switch (behavior) {
                 case 0:
                     moveRandom();
@@ -104,7 +104,7 @@ public class Monster extends Entity implements Serializable {
         Player player = gp.player;
         // Eğer oyuncuya 1 tile menzildeyse saldır
         if (Math.abs(player.x - this.x) < gp.tileSize && Math.abs(player.y - this.y) < gp.tileSize) {
-            int damage = 1; // canavarın saldırı gücü
+            int damage = 3; // canavarın saldırı gücü
             player.currentHp -= damage;
             System.out.println("Monster attacked player for " + damage + " damage. Player HP: " + player.currentHp);
 

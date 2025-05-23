@@ -18,10 +18,12 @@ public class Player extends Entity {
     public int currentHp = 200;
     public Gear equippedSword = null;
     public Gear equippedShoes = null;
-    private int moveCooldown = 20; // varsayılan 30 frame
+    private int moveCooldown = 20;
     private int moveCounter = 0;
 
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+
+    public boolean alive = true;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -33,6 +35,8 @@ public class Player extends Entity {
         x = 100;
         y = 100;
         speed = 10;
+        alive = true;
+        currentHp = maxHp;
     }
 
     public void setPosition(int x, int y) {
@@ -41,12 +45,14 @@ public class Player extends Entity {
     }
 
     public void update() {
+        if (!alive) return;
+
         moveCounter++;
 
         int cooldown = moveCooldown;
         if (equippedShoes != null) {
             cooldown -= equippedShoes.value;
-            if (cooldown < 5) cooldown = 5; // minimum 5 frame olsun
+            if (cooldown < 5) cooldown = 5;
         }
 
         if (moveCounter >= cooldown) {
@@ -77,14 +83,12 @@ public class Player extends Entity {
         }
 
         attackNearbyMonsters();
-
     }
 
     private void attackNearbyMonsters() {
         for (Monster m : gp.monsters) {
             if (!m.alive) continue;
 
-            // 1 tile menzildeyse
             if (Math.abs(m.x - this.x) < gp.tileSize && Math.abs(m.y - this.y) < gp.tileSize) {
                 int damage = 2;
                 if (equippedSword != null) {
@@ -101,14 +105,30 @@ public class Player extends Entity {
         }
     }
 
+    public void takeDamage(int damage) {
+        if (!alive) return;
+
+        currentHp -= damage;
+        System.out.println("Player took " + damage + " damage. HP: " + currentHp + "/" + maxHp);
+        if (currentHp <= 0) {
+            currentHp = 0;
+            die();
+        }
+    }
+
+    private void die() {
+        alive = false;
+        System.out.println("Player died!");
+        gp.gameThread = null;
+    }
+
     private void lootDrop(Monster m) {
         Random rand = new Random();
         Gear.Type type = rand.nextBoolean() ? Gear.Type.SWORD : Gear.Type.SHOES;
-        int value = rand.nextInt(3) + 1; // +1 ile +3 arası
+        int value = rand.nextInt(3) + 1;
         Gear loot = new Gear(type, value);
         System.out.println("Monster dropped: " + loot);
 
-        // Şimdilik otomatik olarak giydiriyoruz:
         if (type == Gear.Type.SWORD) {
             equippedSword = loot;
         } else {
@@ -135,10 +155,15 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D g2) {
+        if (!alive) return;
+
         g2.setColor(Color.white);
         g2.fillRect(x, y, gp.tileSize, gp.tileSize);
 
-        // ==== HP Bar ====
+        g2.setColor(Color.BLACK);
+        g2.setFont(new Font("Arial", Font.BOLD, 18));
+        g2.drawString("P", x + gp.tileSize / 3, y + gp.tileSize / 1.5f);
+
         int barWidth = gp.tileSize;
         int barHeight = 6;
         int barX = x;

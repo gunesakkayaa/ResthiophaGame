@@ -24,7 +24,7 @@ public class GamePanel extends JPanel implements Runnable {
     public ArrayList<Monster> monsters = new ArrayList<>();
     public TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
-    Thread gameThread;
+    public Thread gameThread;
     public Player player;
 
     public GamePanel() {
@@ -86,7 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         player.update();
         for (Monster monster : monsters) {
-            monster.update(); // <-- bu satırı ekle
+            monster.update();
         }
     }
 
@@ -98,7 +98,6 @@ public class GamePanel extends JPanel implements Runnable {
         player.draw(g2);
 
         for (Monster monster : monsters) {
-            monster.update();
             monster.draw(g2, tileSize);
         }
 
