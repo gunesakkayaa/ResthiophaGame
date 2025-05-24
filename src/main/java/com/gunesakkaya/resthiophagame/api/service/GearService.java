@@ -37,9 +37,9 @@ public class GearService {
         }
     }
 
-//    public List<Gear> getAllItems() {
-//        // hem sword hem shoes'u birlikte döndürmek istersen. mesela tüm listeyi koyup mağaza açarız oyun içinde. ama şuan ihtiyacımız yok
-//        return Stream.concat(swordLoots.stream(), shoeLoots.stream())
-//                .collect(Collectors.toList());
-//    }
+    public List<Gear> getAllItems() {
+        // hem sword hem shoes'u birlikte döndürmek istersen. mesela tüm listeyi koyup mağaza açarız oyun içinde. ama şuan ihtiyacımız yok
+        return Stream.concat(swordLoots.stream(), shoeLoots.stream())
+                .collect(Collectors.toList());
+    }
 }

@@ -24,6 +24,7 @@ public class Monster extends Entity implements Serializable {
         this.x = x;
         this.y = y;
         this.speed = 5;
+        this.alive = true; // 💡 garanti: spawn olan monster canlıdır
     }
 
     public void update() {
@@ -33,7 +34,7 @@ public class Monster extends Entity implements Serializable {
         if (moveCounter >= moveCooldown) {
             moveCounter = 0;
 
-            int behavior = random.nextInt(3); //buralar monsterında hal ve hareketi belirledik
+            int behavior = random.nextInt(3);
             switch (behavior) {
                 case 0:
                 case 2:
@@ -48,7 +49,7 @@ public class Monster extends Entity implements Serializable {
         attackPlayerIfNearby();
     }
 
-    private void moveRandom() { //bir aşağı yukarı sağ sol falan gidiyo burada
+    private void moveRandom() {
         int dir = random.nextInt(4);
 
         for (int i = 0; i < speed; i++) {
@@ -143,5 +144,4 @@ public class Monster extends Entity implements Serializable {
         g2.setColor(Color.WHITE);
         g2.drawString(text, textX, textY);
     }
-
 }

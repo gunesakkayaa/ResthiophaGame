@@ -21,11 +21,11 @@ public class GearController {
         System.out.println(">>> GET /api/items/random endpoint triggered");
         return gearService.getRandomLoot();
     }
-//
-//    @GetMapping
-//    public List<Gear> getAllItems() {
-//        return gearService.getAllItems();
-//    }
+
+    @GetMapping
+    public List<Gear> getAllItems() {
+        return gearService.getAllItems();
+    }
 
 
 }

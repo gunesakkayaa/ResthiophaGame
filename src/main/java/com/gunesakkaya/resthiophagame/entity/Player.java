@@ -24,10 +24,15 @@ public class Player extends Entity {
     public Gear equippedSword = null;
     private long lastHealTime = System.currentTimeMillis();
     private final int healAmount = 3;
-    private final int healInterval = 1000; // 1000 ms = 1 saniye
+    private final int healInterval = 1000;
 
     private int coins = 0;
     private List<Gear> inventory = new ArrayList<>();
+
+    private boolean waitingForEquipChoice = false;
+    private Gear pendingLoot = null;
+
+    private boolean inventoryOpen = false;
 
     public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
@@ -48,9 +53,55 @@ public class Player extends Entity {
         this.y = y;
     }
 
-    public void update() {
-        moveCounter++;
+    public boolean isWaitingForEquipChoice() {
+        return waitingForEquipChoice;
+    }
 
+    public String getPendingLootName() {
+        if (pendingLoot == null) return "";
+        return pendingLoot.getName() + " (+" + pendingLoot.getValue() + ") [" + pendingLoot.getType() + "]";
+    }
+
+    public boolean isInventoryOpen() {
+        return inventoryOpen;
+    }
+
+    public void toggleInventory() {
+        inventoryOpen = !inventoryOpen;
+    }
+
+    public void update() {
+        if (inventoryOpen) return;
+
+        if (waitingForEquipChoice && pendingLoot != null) {
+            if (keyH.qPressed) {
+                if (pendingLoot.getType() == Gear.Type.SHOES) equippedShoes = pendingLoot;
+                else if (pendingLoot.getType() == Gear.Type.SWORD) equippedSword = pendingLoot;
+                addToInventory(pendingLoot);
+                System.out.println("Equipped: " + pendingLoot.getName());
+                gp.setLootMessage("Loot: " + pendingLoot.getName());
+                System.out.println("Dropped: " + pendingLoot.getName() + " (+" + pendingLoot.getValue() + ") [" + pendingLoot.getType() + "]");
+                waitingForEquipChoice = false;
+                pendingLoot = null;
+                keyH.qPressed = false;
+                gp.repaint();
+                return;
+            } else if (keyH.wPressed) {
+                int coinValue = pendingLoot.getSellValue();
+                addCoins(coinValue);
+                System.out.println("Sold for " + coinValue + " coins.");
+                gp.setLootMessage("Loot: " + pendingLoot.getName());
+                System.out.println("Dropped: " + pendingLoot.getName() + " (+" + pendingLoot.getValue() + ") [" + pendingLoot.getType() + "]");
+                waitingForEquipChoice = false;
+                pendingLoot = null;
+                keyH.wPressed = false;
+                gp.repaint();
+                return;
+            }
+            return;
+        }
+
+        moveCounter++;
         int cooldown = getEffectiveMoveCooldown();
 
         if (moveCounter >= cooldown) {
@@ -83,11 +134,18 @@ public class Player extends Entity {
             }
             moveCounter = 0;
         }
+
         long now = System.currentTimeMillis();
         if (now - lastHealTime >= healInterval) {
             currentHp = Math.min(currentHp + healAmount, maxHp);
             lastHealTime = now;
         }
+
+        if (keyH.iPressed) {
+            toggleInventory();
+            keyH.iPressed = false;
+        }
+
         attackNearbyMonsters();
     }
 
@@ -98,7 +156,7 @@ public class Player extends Entity {
             if (Math.abs(m.x - this.x) < gp.tileSize && Math.abs(m.y - this.y) < gp.tileSize) {
                 int baseDamage = 5;
                 if (equippedSword != null) {
-                    baseDamage += (int) equippedSword.getValue(); //örn. +3 lük 8 damage gibi
+                    baseDamage += (int) equippedSword.getValue();
                 }
                 int damage = baseDamage;
 
@@ -111,27 +169,31 @@ public class Player extends Entity {
 
                     Gear loot = gp.gearService.getRandomLoot();
 
-                    boolean isBetter = false;
                     if (loot.getType() == Gear.Type.SHOES) {
-                        isBetter = equippedShoes == null || loot.getValue() > equippedShoes.getValue();
+                        if (equippedShoes == null || loot.getValue() > equippedShoes.getValue()) {
+                            equippedShoes = loot;
+                            addToInventory(loot);
+                            System.out.println("Auto-equipped better shoes.");
+                            gp.setLootMessage("Loot: " + loot.getName());
+                            System.out.println("Dropped: " + loot.getName() + " (+" + loot.getValue() + ") [" + loot.getType() + "]");
+                        } else {
+                            pendingLoot = loot;
+                            waitingForEquipChoice = true;
+                            System.out.println("You already have better or same shoes. Equip or Sell?");
+                        }
                     } else if (loot.getType() == Gear.Type.SWORD) {
-                        isBetter = equippedSword == null || loot.getValue() > equippedSword.getValue();
+                        if (equippedSword == null || loot.getValue() > equippedSword.getValue()) {
+                            equippedSword = loot;
+                            addToInventory(loot);
+                            System.out.println("Auto-equipped better sword.");
+                            gp.setLootMessage("Loot: " + loot.getName());
+                            System.out.println("Dropped: " + loot.getName() + " (+" + loot.getValue() + ") [" + loot.getType() + "]");
+                        } else {
+                            pendingLoot = loot;
+                            waitingForEquipChoice = true;
+                            System.out.println("You already have better or same sword. Equip or Sell?");
+                        }
                     }
-
-                    if (isBetter) {
-                        System.out.println("Better gear found. Auto-equipped.");
-                        if (loot.getType() == Gear.Type.SHOES) equippedShoes = loot;
-                        else if (loot.getType() == Gear.Type.SWORD) equippedSword = loot;
-                    } else {
-                        int coinValue = loot.getSellValue();
-                        addCoins(coinValue);
-                        System.out.println("Sold for " + coinValue + " coins.");
-
-                    }
-
-                    addToInventory(loot);
-                    gp.setLootMessage("Loot: " + loot.getName());
-                    System.out.println("Dropped: " + loot.getName() + " (+" + loot.getValue() + ") [" + loot.getType() + "]");
                 }
             }
         }
@@ -159,7 +221,7 @@ public class Player extends Entity {
         double baseCooldown = moveCooldown;
 
         if (equippedShoes != null) {
-            baseCooldown = baseCooldown / (2.0 + equippedShoes.getValue()); //30/(2+x) hızında gideriz
+            baseCooldown = baseCooldown / (2.0 + equippedShoes.getValue());
         }
 
         return (int) baseCooldown;

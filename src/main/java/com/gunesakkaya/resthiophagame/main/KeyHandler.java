@@ -7,6 +7,7 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gp;
     public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean iPressed, qPressed, wPressed;
 
     public KeyHandler(GamePanel gp) {
         this.gp = gp;
@@ -14,14 +15,13 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // tuşlara basılıyor mu onu kontrol ediyoruz basılıyorsa next adım
+        // Kullanılmıyor ama override edilmeli
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
-        // Eğer oyun Game Over durumundaysa Y/N tuşlarına göre cevap döner
         if (gp.gameState == GamePanel.GameState.GAME_OVER) {
             if (code == KeyEvent.VK_Y) {
                 gp.restartGame();
@@ -31,19 +31,29 @@ public class KeyHandler implements KeyListener {
             return;
         }
 
-        if (code == KeyEvent.VK_W) upPressed = true;
-        if (code == KeyEvent.VK_S) downPressed = true;
-        if (code == KeyEvent.VK_A) leftPressed = true;
-        if (code == KeyEvent.VK_D) rightPressed = true;
+        switch (code) {
+            case KeyEvent.VK_W -> upPressed = true;
+            case KeyEvent.VK_S -> downPressed = true;
+            case KeyEvent.VK_A -> leftPressed = true;
+            case KeyEvent.VK_D -> rightPressed = true;
+            case KeyEvent.VK_I -> iPressed = true;
+            case KeyEvent.VK_Q -> qPressed = true;
+            case KeyEvent.VK_E -> wPressed = true; // not VK_W to avoid conflict with move up
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
 
-        if (code == KeyEvent.VK_W) upPressed = false;
-        if (code == KeyEvent.VK_S) downPressed = false;
-        if (code == KeyEvent.VK_A) leftPressed = false;
-        if (code == KeyEvent.VK_D) rightPressed = false;
+        switch (code) {
+            case KeyEvent.VK_W -> upPressed = false;
+            case KeyEvent.VK_S -> downPressed = false;
+            case KeyEvent.VK_A -> leftPressed = false;
+            case KeyEvent.VK_D -> rightPressed = false;
+            case KeyEvent.VK_I -> iPressed = false;
+            case KeyEvent.VK_Q -> qPressed = false;
+            case KeyEvent.VK_E -> wPressed = false;
+        }
     }
 }
