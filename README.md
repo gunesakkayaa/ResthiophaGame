@@ -1,6 +1,6 @@
 
 
-./gradlew clean build
+// ./gradlew clean build
 veya
 ./gradlew --refresh-dependencies
 
