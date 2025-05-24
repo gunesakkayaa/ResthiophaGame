@@ -15,6 +15,9 @@ public class Gear {
         this.value = value;
         this.name = name;
     }
+    public int getSellValue() {
+        return (int)(value * 100);
+    }
 
     public Type getType() {
         return type;

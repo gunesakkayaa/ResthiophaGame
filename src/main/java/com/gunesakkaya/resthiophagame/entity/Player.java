@@ -5,6 +5,8 @@ import com.gunesakkaya.resthiophagame.main.GamePanel;
 import com.gunesakkaya.resthiophagame.main.KeyHandler;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Player extends Entity {
 
@@ -24,6 +26,8 @@ public class Player extends Entity {
     private final int healAmount = 3;
     private final int healInterval = 1000; // 1000 ms = 1 saniye
 
+    private int coins = 0;
+    private List<Gear> inventory = new ArrayList<>();
 
     public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
@@ -94,7 +98,7 @@ public class Player extends Entity {
             if (Math.abs(m.x - this.x) < gp.tileSize && Math.abs(m.y - this.y) < gp.tileSize) {
                 int baseDamage = 5;
                 if (equippedSword != null) {
-                    baseDamage += (int) equippedSword.getValue();
+                    baseDamage += (int) equippedSword.getValue(); //örn. +3 lük 8 damage gibi
                 }
                 int damage = baseDamage;
 
@@ -107,19 +111,26 @@ public class Player extends Entity {
 
                     Gear loot = gp.gearService.getRandomLoot();
 
+                    boolean isBetter = false;
                     if (loot.getType() == Gear.Type.SHOES) {
-                        if (equippedShoes == null || loot.getValue() > equippedShoes.getValue()) {
-                            equippedShoes = loot;
-                        }
+                        isBetter = equippedShoes == null || loot.getValue() > equippedShoes.getValue();
                     } else if (loot.getType() == Gear.Type.SWORD) {
-                        if (equippedSword == null || loot.getValue() > equippedSword.getValue()) {
-                            equippedSword = loot;
-                        }
+                        isBetter = equippedSword == null || loot.getValue() > equippedSword.getValue();
                     }
 
-                    // Loot mesajını gösterir
-                    gp.setLootMessage("Loot: " + loot.getName());
+                    if (isBetter) {
+                        System.out.println("Better gear found. Auto-equipped.");
+                        if (loot.getType() == Gear.Type.SHOES) equippedShoes = loot;
+                        else if (loot.getType() == Gear.Type.SWORD) equippedSword = loot;
+                    } else {
+                        int coinValue = loot.getSellValue();
+                        addCoins(coinValue);
+                        System.out.println("Sold for " + coinValue + " coins.");
 
+                    }
+
+                    addToInventory(loot);
+                    gp.setLootMessage("Loot: " + loot.getName());
                     System.out.println("Dropped: " + loot.getName() + " (+" + loot.getValue() + ") [" + loot.getType() + "]");
                 }
             }
@@ -148,10 +159,26 @@ public class Player extends Entity {
         double baseCooldown = moveCooldown;
 
         if (equippedShoes != null) {
-            baseCooldown = baseCooldown / (1.0 + equippedShoes.getValue());
+            baseCooldown = baseCooldown / (2.0 + equippedShoes.getValue()); //30/(2+x) hızında gideriz
         }
 
         return (int) baseCooldown;
+    }
+
+    public void addCoins(int amount) {
+        coins += amount;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void addToInventory(Gear loot) {
+        inventory.add(loot);
+    }
+
+    public List<Gear> getInventory() {
+        return inventory;
     }
 
     public void draw(Graphics2D g2) {
