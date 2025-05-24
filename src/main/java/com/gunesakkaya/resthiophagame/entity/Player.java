@@ -1,5 +1,6 @@
 package com.gunesakkaya.resthiophagame.entity;
 
+import com.gunesakkaya.resthiophagame.api.model.Gear;
 import com.gunesakkaya.resthiophagame.main.GamePanel;
 import com.gunesakkaya.resthiophagame.main.KeyHandler;
 
@@ -15,8 +16,14 @@ public class Player extends Entity {
     public boolean collisionOn = false;
     public int maxHp = 200;
     public int currentHp = 200;
-    private int moveCooldown = 10;
+    private int moveCooldown = 30;
     private int moveCounter = 0;
+    public Gear equippedShoes = null;
+    public Gear equippedSword = null;
+    private long lastHealTime = System.currentTimeMillis();
+    private final int healAmount = 3;
+    private final int healInterval = 1000; // 1000 ms = 1 saniye
+
 
     public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
@@ -40,7 +47,7 @@ public class Player extends Entity {
     public void update() {
         moveCounter++;
 
-        int cooldown = moveCooldown;
+        int cooldown = getEffectiveMoveCooldown();
 
         if (moveCounter >= cooldown) {
             for (int i = 0; i < speed; i++) {
@@ -72,7 +79,11 @@ public class Player extends Entity {
             }
             moveCounter = 0;
         }
-
+        long now = System.currentTimeMillis();
+        if (now - lastHealTime >= healInterval) {
+            currentHp = Math.min(currentHp + healAmount, maxHp);
+            lastHealTime = now;
+        }
         attackNearbyMonsters();
     }
 
@@ -81,13 +92,35 @@ public class Player extends Entity {
             if (!m.alive) continue;
 
             if (Math.abs(m.x - this.x) < gp.tileSize && Math.abs(m.y - this.y) < gp.tileSize) {
-                int damage = 2;
+                int baseDamage = 5;
+                if (equippedSword != null) {
+                    baseDamage += (int) equippedSword.getValue();
+                }
+                int damage = baseDamage;
+
                 m.hp -= damage;
                 System.out.println("Attacked monster for " + damage + " damage. Remaining HP: " + m.hp);
 
                 if (m.hp <= 0) {
                     m.alive = false;
                     System.out.println("Monster defeated.");
+
+                    Gear loot = gp.gearService.getRandomLoot();
+
+                    if (loot.getType() == Gear.Type.SHOES) {
+                        if (equippedShoes == null || loot.getValue() > equippedShoes.getValue()) {
+                            equippedShoes = loot;
+                        }
+                    } else if (loot.getType() == Gear.Type.SWORD) {
+                        if (equippedSword == null || loot.getValue() > equippedSword.getValue()) {
+                            equippedSword = loot;
+                        }
+                    }
+
+                    // Loot mesajını gösterir
+                    gp.setLootMessage("Loot: " + loot.getName());
+
+                    System.out.println("Dropped: " + loot.getName() + " (+" + loot.getValue() + ") [" + loot.getType() + "]");
                 }
             }
         }
@@ -109,6 +142,16 @@ public class Player extends Entity {
         if (gp.tileM.tile[gp.tileM.mapTileNum[bottomRow][rightCol]].collision) return true;
 
         return false;
+    }
+
+    public int getEffectiveMoveCooldown() {
+        double baseCooldown = moveCooldown;
+
+        if (equippedShoes != null) {
+            baseCooldown = baseCooldown / (1.0 + equippedShoes.getValue());
+        }
+
+        return (int) baseCooldown;
     }
 
     public void draw(Graphics2D g2) {

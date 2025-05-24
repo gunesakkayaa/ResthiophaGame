@@ -1,5 +1,6 @@
 package com.gunesakkaya.resthiophagame.main;
 
+import com.gunesakkaya.resthiophagame.api.service.GearService;
 import com.gunesakkaya.resthiophagame.entity.Monster;
 import com.gunesakkaya.resthiophagame.entity.Player;
 import com.gunesakkaya.resthiophagame.tile.TileManager;
@@ -25,8 +26,13 @@ public class GamePanel extends JPanel implements Runnable {
     KeyHandler keyH = new KeyHandler(this);
     public Thread gameThread;
     public Player player;
+    public GearService gearService = new GearService(); // doğrudan yaratıyoruz şimdilik
 
-    private static class RespawnInfo { //yeniden doğmasıyla alakalı bilgileri tanımlıyoruz
+    private String lootMessage = "";
+    private long lootMessageStartTime = 0;
+    private final int lootMessageDuration = 3000; // ms
+
+    private static class RespawnInfo {
         int x, y;
         long respawnTime;
 
@@ -38,7 +44,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private final java.util.List<RespawnInfo> pendingRespawns = new ArrayList<>();
-
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -60,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
         monsters.add(new Monster(this, tileSize * 15, tileSize * 2));
         monsters.add(new Monster(this, tileSize * 10, tileSize * 10));
     }
+
     public void restartGame() {
         int px = tileM.playerStartX * tileSize;
         int py = tileM.playerStartY * tileSize;
@@ -71,12 +77,11 @@ public class GamePanel extends JPanel implements Runnable {
         gameState = GameState.PLAYING;
     }
 
-
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
-
     }
+
     public enum GameState {
         PLAYING,
         GAME_OVER
@@ -84,6 +89,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GameState gameState = GameState.PLAYING;
 
+    public void setLootMessage(String message) {
+        this.lootMessage = message;
+        this.lootMessageStartTime = System.currentTimeMillis();
+    }
 
     @Override
     public void run() {
@@ -119,20 +128,18 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameState == GameState.PLAYING) {
             player.update();
 
-            // Monster güncelleme + ölüm kontrolü
             java.util.Iterator<Monster> iterator = monsters.iterator();
             while (iterator.hasNext()) {
                 Monster monster = iterator.next();
                 monster.update();
 
                 if (!monster.alive) {
-                    iterator.remove(); // ölen monster oyundan çıkar
-                    long respawnTime = System.currentTimeMillis() + 20000; // respawn süresi belirledik (20 saniye)
+                    iterator.remove();
+                    long respawnTime = System.currentTimeMillis() + 20000;
                     pendingRespawns.add(new RespawnInfo(monster.x, monster.y, respawnTime));
                 }
             }
 
-            // Respawn kontrolü
             long now = System.currentTimeMillis();
             java.util.Iterator<RespawnInfo> respawnIterator = pendingRespawns.iterator();
             while (respawnIterator.hasNext()) {
@@ -143,14 +150,11 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            // player ölünce gamer over metoduna geçer
             if (player.currentHp <= 0) {
                 gameState = GameState.GAME_OVER;
             }
         }
     }
-
-
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -163,27 +167,45 @@ public class GamePanel extends JPanel implements Runnable {
             monster.draw(g2, tileSize);
         }
 
+        if (!lootMessage.isEmpty()) {
+            long now = System.currentTimeMillis();
+            if (now - lootMessageStartTime < lootMessageDuration) {
+                int boxX = screenWidth - 200;
+                int boxY = screenHeight - 50;
+                int boxWidth = 190;
+                int boxHeight = 30;
+
+                g2.setColor(Color.BLACK);
+                g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 15, 15); // ← köşe yuvarlaklığı burada
+
+                g2.setColor(Color.WHITE);
+                g2.setFont(new Font("Arial", Font.BOLD, 14));
+                g2.drawString(lootMessage, boxX + 10, boxY + 20);
+            } else {
+                lootMessage = "";
+            }
+        }
+
+
+
         if (gameState == GameState.GAME_OVER) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, screenWidth, screenHeight);
 
-            // game over olduktan sonra ekranda çıkmasını istediğimiz box'ı şekillendirdik
             int boxWidth = 400;
             int boxHeight = 150;
             int boxX = (screenWidth - boxWidth) / 2;
             int boxY = (screenHeight - boxHeight) / 2;
 
-            g2.setColor(new Color(30, 30, 30, 220)); //  burada saydamlaştırdık
-            g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20); // kutunun keskin hatta olmaması için radiusu ekledik
+            g2.setColor(new Color(30, 30, 30, 220));
+            g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20);
 
-            // Game Over yazısı:
             g2.setColor(Color.RED);
             g2.setFont(new Font("Verdana", Font.BOLD, 36));
             String gameOverText = "GAME OVER";
             int textWidth = g2.getFontMetrics().stringWidth(gameOverText);
             g2.drawString(gameOverText, boxX + (boxWidth - textWidth) / 2, boxY + 50);
 
-            // YES ve NO yazıları:
             g2.setFont(new Font("Verdana", Font.BOLD, 24));
             g2.setColor(Color.WHITE);
             String yesText = "[Y] YES";

@@ -1,4 +1,3 @@
-// KeyHandler.java
 package com.gunesakkaya.resthiophagame.main;
 
 import java.awt.event.KeyEvent;
