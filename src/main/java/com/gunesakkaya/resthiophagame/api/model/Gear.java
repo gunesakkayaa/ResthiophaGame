@@ -8,8 +8,6 @@ public class Gear {
     private double value;
     private String name;
 
-    public Gear() {}
-
     public Gear(Type type, double value, String name) {
         this.type = type;
         this.value = value;
@@ -18,29 +16,14 @@ public class Gear {
     public int getSellValue() {
         return (int)(value * 100);
     }
-
     public Type getType() {
         return type;
     }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
     public double getValue() {
         return value;
     }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

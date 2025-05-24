@@ -87,6 +87,8 @@ public class GamePanel extends JPanel implements Runnable {
         monsters.add(new Monster(this, tileSize * 10, tileSize * 7));
         monsters.add(new Monster(this, tileSize * 15, tileSize * 2));
         monsters.add(new Monster(this, tileSize * 10, tileSize * 10));
+        monsters.add(new Monster(this, tileSize * 16, tileSize * 15));
+
     }
 
     public void restartGame() {

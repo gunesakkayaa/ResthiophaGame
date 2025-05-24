@@ -3,7 +3,6 @@ import java.util.List;
 import com.gunesakkaya.resthiophagame.api.model.Gear;
 import com.gunesakkaya.resthiophagame.api.service.GearService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

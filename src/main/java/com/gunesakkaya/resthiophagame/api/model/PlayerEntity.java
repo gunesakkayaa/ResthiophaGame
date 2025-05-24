@@ -22,18 +22,5 @@ public class PlayerEntity {
         this.currentHp = 200;
     }
 
-    // Getters & Setters
-    public Long getId() { return id; }
 
-    public int getCoins() { return coins; }
-    public void setCoins(int coins) { this.coins = coins; }
-
-    public int getLevel() { return level; }
-    public void setLevel(int level) { this.level = level; }
-
-    public int getCurrentHp() { return currentHp; }
-    public void setCurrentHp(int currentHp) { this.currentHp = currentHp; }
-
-    public int getMaxHp() { return maxHp; }
-    public void setMaxHp(int maxHp) { this.maxHp = maxHp; }
 }

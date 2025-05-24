@@ -14,7 +14,7 @@ public class Monster extends Entity implements Serializable {
     public boolean alive = true;
     public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
-    private int moveCooldown = 25;
+    private int moveCooldown = 20;
     private int moveCounter = 0;
 
     private Random random = new Random();
