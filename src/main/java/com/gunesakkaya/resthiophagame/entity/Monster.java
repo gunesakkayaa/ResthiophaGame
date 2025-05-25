@@ -2,7 +2,10 @@ package com.gunesakkaya.resthiophagame.entity;
 
 import com.gunesakkaya.resthiophagame.main.GamePanel;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -14,8 +17,10 @@ public class Monster extends Entity implements Serializable {
     public boolean alive = true;
     public Rectangle solidArea = new Rectangle(8, 8, 32, 32);
 
-    private int moveCooldown = 20;
+    private int moveCooldown = 15;
     private int moveCounter = 0;
+    private BufferedImage monsterImage;
+
 
     private Random random = new Random();
 
@@ -24,7 +29,13 @@ public class Monster extends Entity implements Serializable {
         this.x = x;
         this.y = y;
         this.speed = 5;
-        this.alive = true; // 💡 garanti: spawn olan monster canlıdır
+        this.alive = true;
+
+        try {
+            monsterImage = ImageIO.read(getClass().getResourceAsStream("/foto/monster12.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void update() {
@@ -127,21 +138,6 @@ public class Monster extends Entity implements Serializable {
         int drawX = x + solidArea.x;
         int drawY = y + solidArea.y;
 
-        g2.setColor(Color.BLACK);
-        g2.fillRect(drawX, drawY, solidArea.width, solidArea.height);
-
-        String text = "M";
-        Font font = new Font("Verdana", Font.TRUETYPE_FONT, gp.tileSize / 2);
-        g2.setFont(font);
-        FontMetrics metrics = g2.getFontMetrics(font);
-
-        int textWidth = metrics.stringWidth(text);
-        int textHeight = metrics.getHeight();
-
-        int textX = drawX + (solidArea.width - textWidth) / 2;
-        int textY = drawY + ((solidArea.height - textHeight) / 2) + metrics.getAscent();
-
-        g2.setColor(Color.WHITE);
-        g2.drawString(text, textX, textY);
+        g2.drawImage(monsterImage, drawX, drawY, solidArea.width, solidArea.height, null);
     }
 }

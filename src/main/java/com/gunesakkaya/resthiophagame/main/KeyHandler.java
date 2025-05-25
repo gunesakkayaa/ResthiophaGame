@@ -23,7 +23,7 @@ public class KeyHandler implements KeyListener {
         int code = e.getKeyCode();
 
         if (gp.gameState == GamePanel.GameState.GAME_OVER) {
-            if (code == KeyEvent.VK_Y) {
+            if (code == KeyEvent.VK_R) {
                 gp.restartGame();
             } else if (code == KeyEvent.VK_N) {
                 System.exit(0);

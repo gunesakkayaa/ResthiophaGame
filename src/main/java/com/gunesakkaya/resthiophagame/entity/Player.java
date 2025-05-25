@@ -18,7 +18,7 @@ public class Player extends Entity {
     public boolean collisionOn = false;
     public int maxHp = 200;
     public int currentHp = 200;
-    private int moveCooldown = 30;
+    private int moveCooldown = 20;
     private int moveCounter = 0;
     public Gear equippedShoes = null;
     public Gear equippedSword = null;

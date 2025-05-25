@@ -2,6 +2,7 @@ package com.gunesakkaya.resthiophagame.tile;
 
 import com.gunesakkaya.resthiophagame.main.GamePanel;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,9 +25,20 @@ public class TileManager {
 
         tile[0] = new Tile(); // Yol
         tile[0].collision = false;
+        try {
+            tile[0].image = ImageIO.read(getClass().getResourceAsStream("/foto/path.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         tile[1] = new Tile(); // Duvar
         tile[1].collision = true;
+        try {
+            tile[1].image = ImageIO.read(getClass().getResourceAsStream("/foto/wall.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         loadMap("/maps/map.txt");
     }
@@ -83,14 +95,9 @@ public class TileManager {
                 int y = row * gp.tileSize;
 
                 if (tileNum == 1) {
-                    g2.setColor(Color.gray);//walls color
-                    g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-                    g2.setColor(Color.WHITE);
-                    g2.setFont(new Font("Verdana", Font.BOLD, gp.tileSize / 2));
-                    g2.drawString("X", x + gp.tileSize / 3, y + (gp.tileSize * 2) / 3);
+                    g2.drawImage(tile[1].image, x, y, gp.tileSize, gp.tileSize, null);
                 } else {
-                    g2.setColor(Color.decode("#d4e4b4")); //path color
-                    g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+                    g2.drawImage(tile[0].image, x, y, gp.tileSize, gp.tileSize, null);
                 }
             }
         }

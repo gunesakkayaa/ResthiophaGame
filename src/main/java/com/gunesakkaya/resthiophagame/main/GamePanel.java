@@ -264,6 +264,35 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Cancel", cancelButton.x + 15, cancelButton.y + 17);
         }
 
+        if (gameState == GameState.GAME_OVER) {
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+
+            int boxWidth = 400;
+            int boxHeight = 150;
+            int boxX = (screenWidth - boxWidth) / 2;
+            int boxY = (screenHeight - boxHeight) / 2;
+
+            g2.setColor(new Color(30, 30, 30, 220));
+            g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20);
+
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Verdana", Font.BOLD, 36));
+            String gameOverText = "GAME OVER";
+            int textWidth = g2.getFontMetrics().stringWidth(gameOverText);
+            g2.drawString(gameOverText, boxX + (boxWidth - textWidth) / 2, boxY + 50);
+
+            g2.setFont(new Font("Verdana", Font.BOLD, 24));
+            g2.setColor(Color.WHITE);
+            String yesText = "Retry(R)";
+            String noText = "Close(N)";
+            int yesWidth = g2.getFontMetrics().stringWidth(yesText);
+            int noWidth = g2.getFontMetrics().stringWidth(noText);
+
+            g2.drawString(yesText, boxX + boxWidth / 4 - yesWidth / 2, boxY + 110);
+            g2.drawString(noText, boxX + (boxWidth * 3 / 4) - noWidth / 2, boxY + 110);
+        }
+
         g2.dispose();
     }
 }
