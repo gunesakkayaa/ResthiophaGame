@@ -1,0 +1,131 @@
+Resthiopha Game - Teknik Dokümantasyon
+Genel Bakış
+Resthiopha Game, Java Swing ile görsel arayüzü oluşturulmuş, Spring Boot ile REST API ve veritabanı entegrasyonu olan 2D tile-tabanlı bir RPG oyunudur. Oyuncu harita üzerinde hareket eder, canavarlarla savaşır, loot toplar ve envanteri yönetir.
+Proje Yapısı
+- api → REST API katmanı
+  - controller → REST uçları
+  - model → DTO/Entity modelleri
+  - repository → Veritabanı erişimi
+  - service → İş mantığı
+- entity → Oyuncu ve canavar sınıfları
+- main → Oyun ekranı, döngü ve kontroller
+- tile → Harita yönetimi ve çizimi
+- resources → map.txt ve Spring ayarları
+Teknolojiler
+- Java 17+
+- Java Swing
+- Spring Boot 3
+- H2 Veritabanı
+- Maven / Gradle
+Oyuncu Kontrolleri
+- W A S D → Hareket
+- I → Envanteri aç/kapat
+- Q → Eşyayı kuşan
+- E → Eşyayı sat
+- Y / N → Game Over seçim
+Oyun Mekanikleri
+- Canavarlar rastgele veya oyuncuya yönelerek hareket eder
+- Yakınsa saldırır
+- Sword ya da Shoes loot düşer
+- Daha iyi eşya varsa otomatik kuşanılır
+- Envanter ekranı oyun akışını durdurur
+REST API Uçları
+GearController:
+- GET /api/items/random → Rastgele loot döner
+- GET /api/items → Tüm lootları döner
+
+PlayerController:
+- GET /api/player/coins → Coin miktarını döner
+- GET /api/player/inventory → Envanteri döner
+- GET /api/player/equipment → Kuşanılan item'ları döner
+- GET /api/player/summary → Oyuncu özet bilgisi
+- GET /api/player → Oyuncu veritabanı kaydı
+- POST /api/player/save → Oyuncu kaydeder
+Harita Sistemi
+- map.txt dosyasından yüklenir
+- '1' / 'X' = Duvar
+- '0' / '.' = Yol
+- 'P' = Oyuncu başlangıç noktası
+Veritabanı
+- H2 bellekte çalışan veritabanı
+- Konsol erişimi: /h2-console
+- PlayerEntity sınıfı @Entity ile eşleştirilir
+Başlatma Adımları
+1. Spring Boot'u başlat: ResthiophaGameApplication
+2. Swing oyun penceresini başlat: Main
+Geliştirme Fikirleri
+- Mağaza, XP sistemi, yeni haritalar, canavar türleri, ses efektleri
+Geliştirme Yol Haritası
+
+1. OYUN
+- Oyun döngüsü oluşturuldu
+- Oyuncu ekranda gösterildi
+- Oyuncu hareket ettirildi
+- Duvar ve objeler çizildi
+- Temel oyun tamamlandı
+
+2. Aksiyon RPG
+- Canavarlar eklendi
+- Savaş sistemi yapıldı
+- Envanter sistemi entegre edildi
+ 
+Kod Dosyası Özet
+Main.java
+• JFrame başlatır ve GamePanel'i ekler
+• Pencere ayarlarını yapar ve oyun döngüsünü başlatır
+GamePanel.java
+• Ekran ve tile boyutunu tanımlar
+• Oyun döngüsünü ve canavar respawn sistemini yönetir
+• Tüm oyun bileşenlerini çizer
+Monster.java
+• Canavar hareketlerini oluşturur
+• Oyuncuya saldırır ve 20 saniye sonra yeniden doğar
+• Canavarı çizer
+Player.java
+• Oyuncunun hareketini ve çarpışmalarını yönetir
+• Canavarlarla savaşır ve hasar görür
+• Her saniye HP yeniler
+• Eşya kuşanma ve envanteri yönetir
+• Oyuncuyu ve HP barını çizer
+TileManager.java
+• map.txt dosyasını yükler ve çözümler
+• Tile türlerini eşleştirir (duvar, yol, başlangıç)
+• Arka plan ve duvar sembollerini çizer
+Tile.java
+• Haritadaki duvarı kontrol eder
+• Görsel bilgisini buradan alabilir
+KeyHandler.java
+• Klavye tuşlarını dinler
+• Hareketi ve oyun içi etkileşimleri kontrol eder (I, Q, E, Y/N) 
+API PACKAGE
+Gear.java
+• Bir eşyayı temsil eder (Kılıç veya Ayakkabı)
+• İsim, tür, değer ve satış fiyatını içerir
+PlayerEntity.java
+• Veritabanında oyuncu durumunu tutan JPA entity sınıfı
+• Alanlar: coins, level, currentHp, maxHp
+GearService.java
+• Rastgele eşya üretim mantığını içerir
+• Loot ya da tüm mevcut eşyaları döner
+PlayerService.java
+• Oyun ile veritabanı arasındaki bağlantıyı yönetir
+• PlayerEntity'yi alır veya kaydeder
+• Canlı oyun içindeki Player nesnesini döner
+GearController.java
+• Eşyaları almak için REST endpoint'leri sunar
+• GET /api/items/random, /api/items
+PlayerController.java
+• Oyuncu bilgilerini almak veya güncellemek için REST endpoint'leri sağlar
+• GET /api/player/coins, inventory, summary, vs.
+• POST /api/player/save
+
+PlayerRepository.java
+•  PlayerEntity sınıfına ait verileri H2 veritabanında saklamak ve erişmek için kullanılır.
+• Spring Data JPA’nın JpaRepository arayüzünden kalıtım alır.
+• CRUD (Create, Read, Update, Delete) işlemlerini otomatik olarak sağlar.
+Yaşanmış Sorunlar
+• Oyuncu duvarlardan geçebiliyordu, futureArea ile çözüldü
+• Hız arttıkça bug oluşuyordu, 1 px’lik adımlarla çözüldü
+• Canavarlar öldüğünde 20 saniye sonra aynı yerde yeniden doğuyor
+• Game Over ekranına Y/N tuşları eklendi
+• API uçları Postman ile test edildi, loot loglandı

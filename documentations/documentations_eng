@@ -1,0 +1,130 @@
+Resthiopha Game - Technical Documentation
+Overview
+Resthiopha Game is a 2D tile-based RPG built using Java Swing for GUI and Spring Boot for backend support. The player can move on a grid, fight monsters, collect loot, and manage inventory.
+Project Structure
+- api → REST API layer
+  - controller → REST endpoints
+  - model → DTO/Entity models
+  - repository → Database access
+  - service → Business logic
+- entity → Game entities (player, monster)
+- main → Game screen, loop, input
+- tile → Map system and drawing
+- resources → map.txt and Spring Boot configs
+Technologies
+- Java 17+
+- Java Swing
+- Spring Boot 3
+- H2 Database
+- Maven / Gradle
+Player Controls
+- W A S D → Movement
+- I → Toggle inventory
+- Q → Equip item
+- E → Sell item
+- Y / N → Game Over options
+Game Mechanics
+- Monsters move randomly or toward the player
+- Monsters attack if nearby
+- Loot: sword or shoes
+- Better gear is auto-equipped
+- Inventory pauses the game
+REST API Endpoints
+GearController:
+- GET /api/items/random → Get random loot
+- GET /api/items → Get all loot
+
+PlayerController:
+- GET /api/player/coins → Get coin count
+- GET /api/player/inventory → Get inventory
+- GET /api/player/equipment → Get equipped items
+- GET /api/player/summary → Player summary
+- GET /api/player → Get player entity
+- POST /api/player/save → Save player entity
+Map System
+- Loaded from map.txt
+- '1' / 'X' = Wall
+- '0' / '.' = Path
+- 'P' = Player start position
+Database
+- H2 in-memory database
+- H2 Console: /h2-console
+- PlayerEntity is mapped via @Entity
+Startup Instructions
+1. Start Spring Boot: ResthiophaGameApplication
+2. Launch game window: Main
+Future Ideas
+- Add shop, XP/leveling, new maps, monster types, sound effects
+The Roadmap
+1. GAME
+- Created game loop
+- Displayed player
+- Player movement
+- Render walls and objects
+- Complete base game
+
+2. Action RPG Game
+- Add monsters
+- Create battle system
+- Add inventory
+ 
+Resthiopha Game - Code Responsibility Summary
+Main.java
+• Initializes JFrame and adds GamePanel
+• Configures window settings and starts game loop
+GamePanel.java
+• Defines screen and tile size
+• Handles game loop, monster respawn
+• Draws all game elements
+Monster.java
+• Implements monster movement and AI
+• Attacks player and respawns after 20s
+Player.java
+• Manages player movement and collision
+• Handles combat with monsters
+• Regenerates HP every second
+• Manages gear: auto-equip and inventory
+• Handles keypress interactions (I/Q/E)
+• Draws player and HP bar
+TileManager.java
+• Loads map.txt and parses it
+• Maps tile types (wall, path, player start)
+• Draws tile background and wall indicators
+Tile.java
+• Represents a single tile on the map
+• Holds image and collision info
+Gear.java
+• Represents an item (Sword or Shoes)
+• Stores name, type, value and sell price
+PlayerEntity.java
+• JPA entity for saving player state in database
+• Fields: coins, level, currentHp, maxHp
+GearService.java
+• Provides random gear logic
+• Returns loot or all available gear
+PlayerService.java
+• Handles connection between game and database
+• Retrieves or saves PlayerEntity
+• Returns current in-game player object
+GearController.java
+• Exposes endpoints to fetch gear
+• GET /api/items/random, /api/items
+PlayerController.java
+• Exposes endpoints to fetch or update player info
+• GET /api/player/coins, inventory, summary, etc.
+• POST /api/player/save
+KeyHandler.java
+• Listens for key presses
+• Controls movement and game interactions (I, Q, E, Y/N)
+PlayerRepository.java
+• Used to store and access data related to the PlayerEntity class in the H2 database
+• Inherits from Spring Data JPA’s JpaRepository interface.
+• Automatically provides CRUD operations (Create, Read, Update, Delete)
+
+ 
+Development Notes
+• Player used to pass through walls - fixed using futureArea collision check
+• Movement logic switched from speed-based to pixel-step movement
+• Monsters respawn after 20 seconds via RespawnInfo
+• Game Over UI prompts Y/N keys
+• Connected to Postman by exposing REST endpoints
