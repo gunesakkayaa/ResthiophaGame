@@ -293,6 +293,12 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString(noText, boxX + (boxWidth * 3 / 4) - noWidth / 2, boxY + 110);
         }
 
+        // 🪙 Coin sayısını ekrana yaz
+        g2.setColor(Color.YELLOW);
+        g2.setFont(new Font("Arial", Font.BOLD, 18));
+        g2.drawString("Coins: " + player.getCoins(), 20, 30);
+
+
         g2.dispose();
     }
 }

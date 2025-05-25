@@ -32,7 +32,7 @@ public class Monster extends Entity implements Serializable {
         this.alive = true;
 
         try {
-            monsterImage = ImageIO.read(getClass().getResourceAsStream("/foto/monster12.png"));
+            monsterImage = ImageIO.read(getClass().getResourceAsStream("/foto/monster.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
