@@ -26,6 +26,5 @@ public class GearController {
         return gearService.getAllItems();
     }
 
-
 }
 
