@@ -310,16 +310,16 @@ public class GamePanel extends JPanel implements Runnable {
         int x = 20;
         int y = 20;
 
-// 🎁 Arka plan kutusu
+        //Arka plan kutusu
         int boxWidth = 120;
         int boxHeight = 32;
         g2.setColor(new Color(0, 0, 0, 180)); // Yarı şeffaf siyah
         g2.fillRoundRect(x - 10, y - 5, boxWidth, boxHeight, 20, 20);
 
-// 🪙 Coin simgesi
+        // Coin simgesi
         g2.drawImage(coinImage, x, y, iconSize, iconSize, null);
 
-// ✏️ Coin yazısı
+        //Coin yazısı
         g2.setColor(new Color(255, 215, 0)); // Altın sarısı
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         g2.drawString("x " + player.getCoins(), x + iconSize + 10, y + iconSize - 5);

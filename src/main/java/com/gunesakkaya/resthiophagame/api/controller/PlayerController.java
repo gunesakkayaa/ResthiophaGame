@@ -20,7 +20,6 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    // 🎮 Oyun içindeki canlı oyuncu objesine dayalı endpointler
     @GetMapping("/coins")
     public int getCoins() {
         return playerService.getPlayer().getCoins();
@@ -51,7 +50,6 @@ public class PlayerController {
         return summary;
     }
 
-    // 🗃 Veritabanı tabanlı endpointler
     @GetMapping
     public PlayerEntity getPlayerEntityFromDb() {
         return playerService.getOrCreatePlayerEntity();
